@@ -2,14 +2,18 @@
 
 // Update this URL to your Flask app hosted on PythonAnywhere
 const backendUrl = 'https://finfir.pythonanywhere.com';
+
 document.getElementById('configureBotBtn').addEventListener('click', configureBot);
 document.getElementById('openCommandMakerBtn').addEventListener('click', openCommandMaker);
 document.getElementById('closeCommandMakerBtn').addEventListener('click', closeCommandMaker);
 document.getElementById('addCommandBtn').addEventListener('click', addCommand);
+document.getElementById('getCommandsBtn').addEventListener('click', getCommands);
 
 function configureBot() {
     const botToken = document.getElementById('botToken').value;
-    fetch(`${backendUrl}/configure_bot`, {
+
+    // Check if the entered bot token is valid on the server side
+    fetch(`${backendUrl}/verify_bot_token`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -18,22 +22,42 @@ function configureBot() {
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.success ? 'Bot Configured!' : 'Bot Configuration Failed');
+        if (data.valid) {
+            // Valid bot token, proceed with configuring
+            fetch(`${backendUrl}/configure_bot`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ bot_token: botToken }),
+            })
+            .then(response => response.json())
+            .then(configData => {
+                alert(configData.success ? 'Bot Configured!' : 'Bot Configuration Failed');
+            });
+        } else {
+            alert('Invalid bot token. Please enter a valid bot token to configure.');
+        }
     });
 }
 
 function openCommandMaker() {
-    // Add logic to open the command maker modal
     document.getElementById('commandMakerModal').style.display = 'block';
 }
 
 function closeCommandMaker() {
-    // Add logic to close the command maker modal
     document.getElementById('commandMakerModal').style.display = 'none';
 }
 
 function addCommand() {
-    // Add logic to send a new command to the backend and update the UI
+    const botToken = document.getElementById('botToken').value;
+
+    // Check if the entered bot token is valid
+    if (!isValidBotToken(botToken)) {
+        alert('Invalid bot token. Please enter the correct bot token to add commands.');
+        return;
+    }
+
     const commandName = document.getElementById('commandName').value;
     const textReply = document.getElementById('textReply').value;
     const prefix = document.getElementById('prefix').value;
@@ -43,7 +67,7 @@ function addCommand() {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ command_name: commandName, text_reply: textReply, prefix: prefix }),
+        body: JSON.stringify({ bot_token: botToken, command_name: commandName, text_reply: textReply, prefix: prefix }),
     })
     .then(response => response.json())
     .then(data => {
@@ -51,11 +75,35 @@ function addCommand() {
             alert('Command Added!');
             // Add logic to update the UI with the new command
         } else {
-            alert('Failed to add command');
+            alert(`Failed to add command. ${data.error}`);
         }
-        // Close the command maker modal
         document.getElementById('commandMakerModal').style.display = 'none';
     });
 }
 
-// Add any additional JavaScript functions as needed
+function getCommands() {
+    fetch(`${backendUrl}/get_commands`)
+    .then(response => response.json())
+    .then(data => {
+        const commandsList = document.getElementById('commandsList');
+        commandsList.innerHTML = '';
+
+        if (data.commands && data.commands.length > 0) {
+            data.commands.forEach(command => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Name: ${command.name}, Text Reply: ${command.text_reply}, Prefix: ${command.prefix}`;
+                commandsList.appendChild(listItem);
+            });
+        } else {
+            const listItem = document.createElement('li');
+            listItem.textContent = 'No commands available.';
+            commandsList.appendChild(listItem);
+        }
+    });
+}
+
+// Function to check if the bot token is valid (you can customize this function)
+function isValidBotToken(token) {
+    // Add your validation logic here
+    return token === 'vslif';
+}
