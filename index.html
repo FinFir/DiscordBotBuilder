@@ -1,10 +1,12 @@
+<!-- index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Bot Builder</title>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Discord Bot Builder</h1>
@@ -12,18 +14,18 @@
     <form id="configureForm">
         <label for="botToken">Bot Token:</label>
         <input type="text" id="botToken" required>
-        <button type="button" onclick="configureBot()">Configure Bot</button>
+        <button type="button" id="configureBotBtn">Configure Bot</button>
     </form>
 
     <div id="commandsContainer">
         <h2>Your Bot Commands:</h2>
         <ul id="commandsList"></ul>
-        <button type="button" onclick="openCommandMaker()">Create Command</button>
+        <button type="button" id="openCommandMakerBtn">Create Command</button>
     </div>
 
     <div id="commandMakerModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeCommandMaker()">&times;</span>
+            <span class="close" id="closeCommandMakerBtn">&times;</span>
             <h2>Command Maker</h2>
             <label for="commandName">Command Name:</label>
             <input type="text" id="commandName" required>
@@ -31,40 +33,11 @@
             <input type="text" id="textReply" required>
             <label for="prefix">Prefix:</label>
             <input type="text" id="prefix" required>
-            <button type="button" onclick="addCommand()">Add Command</button>
+            <button type="button" id="addCommandBtn">Add Command</button>
         </div>
     </div>
 
-    <script>
-        function configureBot() {
-            const botToken = document.getElementById('botToken').value;
-            localStorage.setItem('botToken', botToken);
-            alert('Bot Configured!');
-        }
-
-        function openCommandMaker() {
-            const modal = document.getElementById('commandMakerModal');
-            modal.style.display = 'block';
-        }
-
-        function closeCommandMaker() {
-            const modal = document.getElementById('commandMakerModal');
-            modal.style.display = 'none';
-        }
-
-        function addCommand() {
-            const commandName = document.getElementById('commandName').value;
-            const textReply = document.getElementById('textReply').value;
-            const prefix = document.getElementById('prefix').value;
-
-            const commandsList = document.getElementById('commandsList');
-            const li = document.createElement('li');
-            li.textContent = `Command: ${prefix}${commandName}, Reply: ${textReply}`;
-            commandsList.appendChild(li);
-
-            closeCommandMaker();
-            alert('Command Added!');
-        }
-    </script>
+    <!-- Include the new JavaScript file -->
+    <script src="script.js"></script>
 </body>
 </html>
