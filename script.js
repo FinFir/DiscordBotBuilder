@@ -23,7 +23,7 @@ function configureBot() {
     .then(response => response.json())
     .then(data => {
         if (data.valid) {
-            // Valid bot token, proceed with configuring
+            // Valid bot token, proceed with configuring and running the bot
             fetch(`${backendUrl}/configure_bot`, {
                 method: 'POST',
                 headers: {
@@ -33,7 +33,12 @@ function configureBot() {
             })
             .then(response => response.json())
             .then(configData => {
-                alert(configData.success ? 'Bot Configured!' : 'Bot Configuration Failed');
+                if (configData.success) {
+                    // Show alert if bot is configured successfully
+                    alert(configData.message);
+                } else {
+                    alert('Bot Configuration Failed');
+                }
             });
         } else {
             alert('Invalid bot token. Please enter a valid bot token to configure.');
@@ -58,16 +63,16 @@ function addCommand() {
         return;
     }
 
+    const commandPrefix = document.getElementById('prefix').value;
     const commandName = document.getElementById('commandName').value;
     const textReply = document.getElementById('textReply').value;
-    const prefix = document.getElementById('prefix').value;
 
     fetch(`${backendUrl}/add_command`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ bot_token: botToken, command_name: commandName, text_reply: textReply, prefix: prefix }),
+        body: JSON.stringify({ bot_token: botToken, prefix: commandPrefix, command_name: commandName, text_reply: textReply }),
     })
     .then(response => response.json())
     .then(data => {
@@ -91,19 +96,19 @@ function getCommands() {
         if (data.commands && data.commands.length > 0) {
             data.commands.forEach(command => {
                 const listItem = document.createElement('li');
-                listItem.textContent = `Name: ${command.name}, Text Reply: ${command.text_reply}, Prefix: ${command.prefix}`;
+                listItem.textContent = `${command.prefix}${command.trigger}: ${command.text_reply}`;
                 commandsList.appendChild(listItem);
             });
         } else {
             const listItem = document.createElement('li');
-            listItem.textContent = 'No commands available.';
+            listItem.textContent = 'No commands added yet.';
             commandsList.appendChild(listItem);
         }
     });
 }
 
-// Function to check if the bot token is valid (you can customize this function)
+// Check if a bot token is valid (you can customize this function)
 function isValidBotToken(token) {
     // Add your validation logic here
-    return token === 'vslif';
+    return true;  // Replace with your actual validation logic
 }
