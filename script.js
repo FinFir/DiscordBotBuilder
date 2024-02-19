@@ -1,8 +1,7 @@
 // script.js
 
 // Update this URL to your Flask app hosted on PythonAnywhere
-const backendUrl = 'http://finfir.pythonanywhere.com';
-
+const backendUrl = 'https://finfir.pythonanywhere.com';
 document.getElementById('configureBotBtn').addEventListener('click', configureBot);
 document.getElementById('openCommandMakerBtn').addEventListener('click', openCommandMaker);
 document.getElementById('closeCommandMakerBtn').addEventListener('click', closeCommandMaker);
